@@ -13,17 +13,16 @@ handler = WebhookParser('ea97ab3bd02c52ace0e429867ef16f8f')
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
 def callback():
-    '''
+    
     signature = request.headers['X-Line-Signature']
 
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    
+
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
-        '''
 
     return 'OK'
 
