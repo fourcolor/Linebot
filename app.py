@@ -1,5 +1,4 @@
 # 載入需要的模組
-from __future__ import unicode_literals
 import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookParser
