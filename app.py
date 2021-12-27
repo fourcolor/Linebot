@@ -10,6 +10,9 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('iYAOm73bUdqP62mH2/i+BkyAUpm4SkMnf5TlXKB7stwMnBQxvTuHPVdsrnqp+57oqtME3ElvYlSSSrlJG+YOm0fHLBEw8oiNCmNZGBXMr0K4aBArnIoenoEXlocAyQLgs0C+UOow4Q6mRAAJBpVkLAdB04t89/1O/w1cDnyilFU=')
 handler = WebhookParser('ea97ab3bd02c52ace0e429867ef16f8f')
 
+@app.route("/")
+def hello_world():
+    return "hello world!"
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
 def callback():
