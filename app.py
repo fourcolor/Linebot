@@ -18,7 +18,6 @@ def hello_world():
     return "hello world!"
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
-@app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
