@@ -23,6 +23,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
+    print(body)
     id = json.loads(body)["events"][0]["source"]["userId"]
     print(id)
 
