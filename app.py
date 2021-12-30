@@ -29,6 +29,7 @@ def callback():
     # handle webhook body
     try:
         profile = line_bot_api.get_profile(id)
+        print(profile)
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
