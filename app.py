@@ -3,16 +3,14 @@ import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError, LineBotApiError
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
-)
+from linebot.models import *
 
 app = Flask(__name__)
 
 # LINE 聊天機器人的基本資料
 line_bot_api = LineBotApi('iYAOm73bUdqP62mH2/i+BkyAUpm4SkMnf5TlXKB7stwMnBQxvTuHPVdsrnqp+57oqtME3ElvYlSSSrlJG+YOm0fHLBEw8oiNCmNZGBXMr0K4aBArnIoenoEXlocAyQLgs0C+UOow4Q6mRAAJBpVkLAdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('ea97ab3bd02c52ace0e429867ef16f8f')
-
+profile = object()
 @app.route("/")
 def hello_world():
     return "hello world!"
@@ -28,6 +26,7 @@ def callback():
 
     # handle webhook body
     try:
+        profile = line_bot_api.get_profile('<user_id>')
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
@@ -40,7 +39,16 @@ def callback():
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=event.message.text))
+        TextSendMessage(text=profile))
+
+@handler.add(JoinEvent)
+def handle_join(event):
+    newcoming_text = "謝謝邀請我這個機器來至此群組！！我會盡力為大家服務的～"
+
+    line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text=newcoming_text)
+        )
 
 if __name__ == "__main__":
     app.run()
