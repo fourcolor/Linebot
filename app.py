@@ -26,7 +26,7 @@ def callback():
 
     # handle webhook body
     try:
-        profile = line_bot_api.get_profile('<user_id>')
+        #profile = line_bot_api.get_profile('<user_id>')
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
@@ -39,7 +39,7 @@ def callback():
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=str(profile.userId)))
+        TextSendMessage(text=event.message.text))
 
 @handler.add(JoinEvent)
 def handle_join(event):
