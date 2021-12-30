@@ -39,7 +39,7 @@ def callback():
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=profile.userId))
+        TextSendMessage(text=str(profile.userId)))
 
 @handler.add(JoinEvent)
 def handle_join(event):
