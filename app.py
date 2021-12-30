@@ -4,6 +4,7 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError, LineBotApiError
 from linebot.models import *
+import json
 
 app = Flask(__name__)
 
@@ -22,7 +23,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    print(eval(body)["events"][0]["source"]["userId"])
+    print(json.loads(body)["events"][0]["source"]["userId"])
 
     # handle webhook body
     try:
