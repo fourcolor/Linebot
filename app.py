@@ -23,11 +23,12 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    print(json.loads(body)["events"][0]["source"]["userId"])
+    id = json.loads(body)["events"][0]["source"]["userId"]
+    print(id)
 
     # handle webhook body
     try:
-        profile = line_bot_api.get_profile(body["events"]["source"]["userId"])
+        profile = line_bot_api.get_profile(id)
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
