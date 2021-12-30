@@ -21,13 +21,12 @@ def callback():
     signature = request.headers['X-Line-Signature']
 
     # get request body as text
-    body = request.get_data(as_text=True)
-    print(body)
-    app.logger.info("Request body: " + body)
+    body = request.get_data()
+    print(body["events"]["source"]["userId"])
 
     # handle webhook body
     try:
-        #profile = line_bot_api.get_profile('<user_id>')
+        profile = line_bot_api.get_profile(body["events"]["source"]["userId"])
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
