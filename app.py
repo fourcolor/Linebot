@@ -22,6 +22,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
+    print(body)
     app.logger.info("Request body: " + body)
 
     # handle webhook body
@@ -34,13 +35,13 @@ def callback():
 
     return 'OK'
 
-
+'''
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=event.message.text))
-
+'''
 @handler.add(JoinEvent)
 def handle_join(event):
     newcoming_text = "謝謝邀請我這個機器來至此群組！！我會盡力為大家服務的～"
