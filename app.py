@@ -5,12 +5,13 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError, LineBotApiError
 from linebot.models import *
 import json
-
+from dotenv import load_dotenv
+load_dotenv()
 app = Flask(__name__)
 
 # LINE 聊天機器人的基本資料
-line_bot_api = LineBotApi('iYAOm73bUdqP62mH2/i+BkyAUpm4SkMnf5TlXKB7stwMnBQxvTuHPVdsrnqp+57oqtME3ElvYlSSSrlJG+YOm0fHLBEw8oiNCmNZGBXMr0K4aBArnIoenoEXlocAyQLgs0C+UOow4Q6mRAAJBpVkLAdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('ea97ab3bd02c52ace0e429867ef16f8f')
+line_bot_api = LineBotApi(os.getenv('CHANNEL_TOKEN'))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 profile = object()
 @app.route("/")
 def hello_world():
