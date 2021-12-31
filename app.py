@@ -7,7 +7,8 @@ from linebot.models import *
 import json
 from dotenv import load_dotenv
 from database import Database
-from translate import translater
+from translate import Translater
+import librosa
 load_dotenv()
 app = Flask(__name__)
 db = Database()
@@ -38,9 +39,9 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event.source.user_id)
     profile = line_bot_api.get_profile(event.source.user_id)
     msg = event.message.text
+    message = messages()
     db.talk(profile.user_id,msg)
     info = db.get(profile.user_id)
     if(info==None):
@@ -48,23 +49,39 @@ def handle_message(event):
         handle_join(event)
     else:
         if(info[0] == 1):
-            t = translater()
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=t.trans(event.message.text))
-            )
+            t = Translater()
+            message.append(TextSendMessage(text=t.trans(event.message.text)))
+            if(info[3]==True):
+                t.voice().save('static/'+str(profile.user_id)+'m4a')
+                duration = librosa.get_duration(filename='static/'+str(profile.user_id)+'m4a')
+                url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'m4a'
+                if(duration>60):
+                    duration = 60
+                message.append(AudioSendMessage('static/'+str(profile.user_id)+'m4a',duration=duration*1000))
         if (info[0] == 2):
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text=event.message.text))
+                TextSendMessage(text=event.message.text)
+            )
+        line_bot_api.reply_message(
+            event.reply_token,
+            message
+        )
 
 @handler.add(JoinEvent)
 def handle_join(event):
+    profile = line_bot_api.get_profile(event.source.user_id)
+    msg = event.message.text
+    db.talk(profile.user_id,msg)
+    info = db.get(profile.user_id)
+    if(info==None):
+        db.insert(profile.user_id,0)
     line_bot_api.reply_message(
         event.reply_token,
         TemplateSendMessage(
             alt_text='Buttons template',
             template=ButtonsTemplate(
+                thumbnail_image_url='https://scontent.ftpe7-4.fna.fbcdn.net/v/t1.18169-9/10408779_612698742164619_7012016086151051936_n.jpg?_nc_cat=103&ccb=1-5&_nc_sid=174925&_nc_ohc=_Z77ruHvqE8AX-kqAZl&_nc_ht=scontent.ftpe7-4.fna&oh=00_AT_FoEzERCaSrdnQTjRiV-FXOMMiDo0xwlzxNN3qvbUrbg&oe=61F6A36C',
                 title='Menu',
                 text='功能選單',
                 actions=[
@@ -77,7 +94,7 @@ def handle_join(event):
                         data = '2'
                     ),
                     PostbackTemplateAction(
-                        label='高雄市',
+                        label='配對系統-Pairing',
                         data = '3'
                     )
                 ]
@@ -89,7 +106,29 @@ def handle_join(event):
 def handle_postback(event):
     profile = line_bot_api.get_profile(event.source.user_id)
     db.update(profile.user_id,int(event.postback.data))
-    
+    info = int(event.postback.data)
+    if(info==1):
+        line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(
+                    "預設為翻成中文，可以使用下列指令執行其他功能。\n\
+                    指令列\
+                    !help       ->查詢指令\n\
+                    !cl [語言簡寫]->更改翻譯的語言\n\
+                    !ls         ->顯示語言列表\n\
+                    !cv 1/0     ->是否要語音，1代表要，0（預設）代表不要\
+                    !lobby      ->回到大廳\n")
+        )
+    if(info==2):
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(
+                "歡迎與 Fourcolor Chatbot 聊天\n\
+                指令列\
+                !lobby      ->回到大廳\n")
+        )
+    if(info==3):
+        pass
 
 if __name__ == "__main__":
     app.run()

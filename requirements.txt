@@ -6,3 +6,4 @@ googletrans
 gTTS
 python-dotenv
 psycopg2
+librosa

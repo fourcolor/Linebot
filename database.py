@@ -1,3 +1,4 @@
+from logging import fatal
 import psycopg2
 import os
 from dotenv import load_dotenv
@@ -28,7 +29,7 @@ class Database:
     def get(self,id):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("select state,update from lineuser where id = %s", (id,))
+        cursor.execute("select state,update,trans_state,audio_enable from lineuser where id = %s", (id,))
         try:
             data = cursor.fetchall()[0]
         except:
@@ -58,8 +59,21 @@ class Database:
         conn.close()
         return affected
 
+    def getTransInfo(self,id):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("select trans_state,audio_enable from lineuser where id = %s", (id,))
+        try:
+            data = cursor.fetchall()[0]
+        except:
+            data = None        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return data
+
 if __name__ == "__main__":
     db = Database()
-    print(db.get(13)==None)
+    print(db.getTransInfo('U11e740fda119861f84109438dfa63f38')[1]==False)
 
 
