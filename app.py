@@ -50,7 +50,7 @@ def handle_message(event):
     else:
         if(info[0] == 1):
             t = Translater()
-            message.append(TextSendMessage(text=t.trans(event.message.text)))
+            message.append(TextSendMessage(text=t.trans(event.message.text,dst=info[2])))
             if(info[3]==True):
                 t.voice().save('static/'+str(profile.user_id)+'m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'m4a'
@@ -108,7 +108,7 @@ def handle_postback(event):
         line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(
-                    "預設為翻成中文，可以使用下列指令執行其他功能。\n指令列\n!help       ->查詢指令\n!cl [語言簡寫]->更改翻譯的語言\n!ls         ->顯示語言列表\n!cv 1/0     ->是否要語音，1代表要，0（預設）代表不要\!lobby      ->回到大廳\n")
+                    "預設為翻成中文，可以使用下列指令執行其他功能。\n指令列\n!help       ->查詢指令\n!cl [語言簡寫]->更改翻譯的語言\n!ls         ->顯示語言列表\n!cv 1/0     ->是否要語音，1代表要，0（預設）代表不要\n!lobby      ->回到大廳\n")
         )
     if(info==2):
         line_bot_api.reply_message(
