@@ -108,13 +108,7 @@ def handle_postback(event):
         line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(
-                    "預設為翻成中文，可以使用下列指令執行其他功能。\n\
-                    指令列\
-                    !help       ->查詢指令\n\
-                    !cl [語言簡寫]->更改翻譯的語言\n\
-                    !ls         ->顯示語言列表\n\
-                    !cv 1/0     ->是否要語音，1代表要，0（預設）代表不要\
-                    !lobby      ->回到大廳\n")
+                    "預設為翻成中文，可以使用下列指令執行其他功能。\n指令列\n!help       ->查詢指令\n!cl [語言簡寫]->更改翻譯的語言\n!ls         ->顯示語言列表\n!cv 1/0     ->是否要語音，1代表要，0（預設）代表不要\!lobby      ->回到大廳\n")
         )
     if(info==2):
         line_bot_api.reply_message(
