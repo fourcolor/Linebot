@@ -40,6 +40,8 @@ def callback():
 def handle_message(event):
     print(event.source.user_id)
     profile = line_bot_api.get_profile(event.source.user_id)
+    msg = event.message.text
+    db.talk(profile.user_id,msg)
     info = db.get(profile.user_id)
     if(info==None):
         db.insert(profile.user_id,0)
@@ -52,8 +54,6 @@ def handle_message(event):
                 TextSendMessage(text=t.trans(event.message.text))
             )
         if (info[0] == 2):
-            msg = event.message.text
-            db.talk(id,msg)
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=event.message.text))
