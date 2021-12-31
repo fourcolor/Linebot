@@ -17,3 +17,7 @@ class Translater:
 
     def voice(self):
         return gTTS(self.ans)
+
+if __name__ == "__main__":
+    t = Translater()
+    print(t.trans("i love u",'zh-tw'))
