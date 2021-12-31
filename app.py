@@ -40,7 +40,7 @@ def callback():
 def handle_message(event):
     profile = line_bot_api.get_profile(event.source.user_id)
     msg = event.message.text
-    message = messages()
+    message = []
     db.talk(profile.user_id,msg)
     info = db.get(profile.user_id)
     print(info)
