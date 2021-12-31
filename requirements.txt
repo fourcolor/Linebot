@@ -5,3 +5,4 @@ apscheduler
 googletrans
 gTTS
 python-dotenv
+psycopg2
