@@ -8,7 +8,6 @@ import json
 from dotenv import load_dotenv
 from database import Database
 from translate import Translater
-import librosa
 load_dotenv()
 app = Flask(__name__)
 db = Database()
@@ -54,11 +53,10 @@ def handle_message(event):
             message.append(TextSendMessage(text=t.trans(event.message.text)))
             if(info[3]==True):
                 t.voice().save('static/'+str(profile.user_id)+'m4a')
-                duration = librosa.get_duration(filename='static/'+str(profile.user_id)+'m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'m4a'
                 if(duration>60):
                     duration = 60
-                message.append(AudioSendMessage('static/'+str(profile.user_id)+'m4a',duration=duration*1000))
+                message.append(AudioSendMessage('static/'+str(profile.user_id)+'m4a',duration=len(msg)*500))
         if (info[0] == 2):
             line_bot_api.reply_message(
                 event.reply_token,
