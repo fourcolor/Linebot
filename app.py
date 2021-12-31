@@ -1,8 +1,8 @@
 # 載入需要的模組
 import os
 from flask import Flask, request, abort
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError, LineBotApiError
+from linebot import *
+from linebot.exceptions import *
 from linebot.models import *
 import json
 from dotenv import load_dotenv
