@@ -1,17 +1,65 @@
-import os
 import psycopg2
-#databaseUrl = "postgres://mcaflkrdrretty:a666a34c4e398ad7fb5a605544c81f8879a40a05caef0b04b80fe553b0e57b98@ec2-52-72-252-211.compute-1.amazonaws.com:5432/d207a2go1qb9ti"
+import os
+from dotenv import load_dotenv
+from datetime import datetime as dt
 
-DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a line-bot-fourcolor').read()[:-1]
+from werkzeug import datastructures
+# Update connection string information
+class Database:
+    def __init__(self) -> None:
+        load_dotenv()
+        self.host = os.getenv('DB_HOST')
+        self.dbname = os.getenv('DB_DATABASE')
+        self.user = os.getenv('DB_USER')
+        self.password = os.getenv('DB_PASS')
+        self.sslmode = "require"
+        self.conn_string = "host={0} user={1} dbname={2} password={3} sslmode={4}".format(self.host, self.user, self.dbname, self.password, self.sslmode)
 
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    def insert(self,id,state):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO lineuser (id, state) VALUES (%s, %s);", (id, state))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
 
-cursor = conn.cursor()
+    def get(self,id):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("select state,update from lineuser where id = %s", (id,))
+        try:
+            data = cursor.fetchall()[0]
+        except:
+            data = None        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return data
 
-SQL_order = '''我們輸入 SQL 指令的位置'''
-cursor.execute(SQL_order)
+    def update(self,id,state):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("update lineuser set state = %s ,update = %s where id = %s", (state,dt.now(),id))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
+    
+    def talk(self,id,msg):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO linemsg (userid, message,time) VALUES (%s, %s,%s);", (id, msg,dt.now()))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
 
-conn.commit()
+if __name__ == "__main__":
+    db = Database()
+    print(db.get(13)==None)
 
-cursor.close()
-conn.close()
+
