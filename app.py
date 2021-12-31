@@ -44,6 +44,7 @@ def handle_message(event):
     message = messages()
     db.talk(profile.user_id,msg)
     info = db.get(profile.user_id)
+    print(info)
     if(info==None):
         db.insert(profile.user_id,0)
         handle_join(event)
