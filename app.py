@@ -40,7 +40,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     print(event)
-    profile = line_bot_api.get_profile(int(event.source.userId))
+    profile = line_bot_api.get_profile(int(event['source']['userId']))
     info = db.get(profile.user_id)
     if(info==None):
         db.insert(profile.user_id,0)
@@ -88,7 +88,7 @@ def handle_join(event):
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
-    profile = line_bot_api.get_profile(int(event.source.userId))
+    profile = line_bot_api.get_profile(int(event['source']['userId']))
     db.update(profile.user_id,int(event.postback.data))
     
 
