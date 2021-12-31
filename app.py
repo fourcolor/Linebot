@@ -87,7 +87,7 @@ def handle_join(event):
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
-    profile = line_bot_api.get_profile(int(event.source.user_id))
+    profile = line_bot_api.get_profile(event.source.user_id)
     db.update(profile.user_id,int(event.postback.data))
     
 
