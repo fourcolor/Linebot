@@ -39,6 +39,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    print(event.source.userId)
     profile = line_bot_api.get_profile(int(event.source.userId))
     info = db.get(profile.user_id)
     if(info==None):
