@@ -61,30 +61,33 @@ def handle_message(event):
 @handler.add(JoinEvent)
 def handle_join(event):
     line_bot_api.reply_message(
-    event.reply_token,
-    TemplateSendMessage(
-        alt_text='Buttons template',
-        template=ButtonsTemplate(
-            title='Menu',
-            text='功能選單',
-            actions=[
-                PostbackTemplateAction(
-                    label = '翻譯-Translate',
-                    text = '翻譯-Translate',
-                    data = '1'
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='Menu',
+                text='功能選單',
+                actions=[
+                    PostbackTemplateAction(
+                        label = '翻譯-Translate',
+                        text = '翻譯-Translate',
+                        data = '1'
 
-                ),
-                PostbackTemplateAction(
-                    label='台中市',
-                    text='台中市'
-                ),
-                PostbackTemplateAction(
-                    label='高雄市',
-                    text='高雄市'
-                )
-            ]
+                    ),
+                    PostbackTemplateAction(
+                        label='台中市',
+                        text='台中市',
+                        data = '2'
+                    ),
+                    PostbackTemplateAction(
+                        label='高雄市',
+                        text='高雄市',
+                        data = '3'
+                    )
+                ]
+            )
         )
-    ))
+    )
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
