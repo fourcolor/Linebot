@@ -15,25 +15,24 @@ db = Database()
 line_bot_api = LineBotApi(os.getenv('CHANNEL_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 profile = object()
+
 @app.route("/")
 def hello_world():
     return "hello world!"
+
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
-
     # get request body as text
     body = request.get_data(as_text=True)
-
     # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
-
     return 'OK'
 
 
@@ -45,18 +44,19 @@ def handle_message(event):
     if(info==None):
         db.insert(profile.user_id,0)
         handle_join(event)
-    if(info[0]):
-        t = translater()
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=t.trans(event.message.text))
-        )
     else:
-        msg = event.message.text
-        db.talk(id,msg)
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=event.message.text))
+        if(info[0] == 1):
+            t = translater()
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=t.trans(event.message.text))
+            )
+        if (info[0] == 2):
+            msg = event.message.text
+            db.talk(id,msg)
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=event.message.text))
 
 @handler.add(JoinEvent)
 def handle_join(event):
@@ -70,18 +70,14 @@ def handle_join(event):
                 actions=[
                     PostbackTemplateAction(
                         label = '翻譯-Translate',
-                        text = '翻譯-Translate',
                         data = '1'
-
                     ),
                     PostbackTemplateAction(
-                        label='台中市',
-                        text='台中市',
+                        label='聊天機器人-Chatbot',
                         data = '2'
                     ),
                     PostbackTemplateAction(
                         label='高雄市',
-                        text='高雄市',
                         data = '3'
                     )
                 ]
@@ -91,7 +87,7 @@ def handle_join(event):
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
-    profile = line_bot_api.get_profile(int(event['source']['userId']))
+    profile = line_bot_api.get_profile(int(event.source.user_id))
     db.update(profile.user_id,int(event.postback.data))
     
 
