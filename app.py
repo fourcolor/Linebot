@@ -52,7 +52,8 @@ def handle_message(event):
         #翻譯機
         if(info[0] == 1):
             t = Translater()
-            if(msg[0]=='!'):
+            if(msg[0]=='!' or msg[0]=='！'):
+                print(msg)
                 if(msg[1:5]=='help'):
                     line_bot_api.reply_message(
                         event.reply_token,
