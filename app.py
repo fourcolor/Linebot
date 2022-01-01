@@ -164,6 +164,9 @@ def handle_message(event):
                         if(len(cabdidates)==0):
                             message.append(TextSendMessage(text="目前無人可配對"))
                         else:
+                            db.rmPairing(info[5])
+                            data = {'id': info[5],'msg':profile.display_name+" 取消了配對"}
+                            rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
                             selected_index = rd.randint(0,len(cabdidates)-1)
                             pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
                             db.pair(profile.user_id,pairProfile.user_id)
