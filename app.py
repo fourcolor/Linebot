@@ -62,22 +62,14 @@ def handle_message(event):
                     )
                     return
                 if(msg[1:3]=='cl'):
-                    if(db.updatelanguage(profile.user_id,msg.split(' ')[1]>0)):
-                        line_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(
-                            "已將翻譯語言設定為" + msg.split(' ')[1]
-                            )
+                    db.updatelanguage(profile.user_id,msg.split(' ')[1])
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        TextSendMessage(
+                        "已將翻譯語言設定為" + msg.split(' ')[1]
                         )
-                        return
-                    else:
-                        line_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(
-                            "翻譯語言已為" + msg.split(' ')[1]
-                            )
-                        )
-                        return
+                    )
+                    return
                 if(msg[1:3]=='ls'):
                     line_bot_api.reply_message(
                         event.reply_token,
