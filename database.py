@@ -72,7 +72,7 @@ class Database:
     def talk(self,id,msg,to='-1'):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO linemsg (userid, message,time,to_id) VALUES (%s, %s,%s);", (id, msg,dt.now(),to))
+        cursor.execute("INSERT INTO linemsg (userid, message,time,to_id) VALUES (%s, %s,%s,%s);", (id, msg,dt.now(),to))
         affected = cursor.rowcount
         conn.commit()
         cursor.close()
