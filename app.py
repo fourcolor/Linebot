@@ -24,7 +24,6 @@ def hello_world():
 
 @app.route("/static", methods=['GET'])
 def getaudio():
-    print("static")
     file = request.args.get('audio')
     print(file)
     try:
@@ -125,7 +124,7 @@ def handle_message(event):
             message.append(TextSendMessage(text=result))
             if(info[3]==True):
                 t.voice().save(str(profile.user_id)+'.m4a')
-                url = 'https://line-bot-fourcolor.herokuapp.com/static?'+str(profile.user_id)
+                url = 'https://line-bot-fourcolor.herokuapp.com/static?audio'+str(profile.user_id)
                 message.append(AudioSendMessage(url,duration=len(msg)*330))
 
         #聊天機器人
