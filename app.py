@@ -145,46 +145,46 @@ def handle_message(event):
             )
         
         if(info[0]==3):
-            if(info[4]==False and ((msg[0]=='!' or msg[0]=='！')and msg[1:5]=='find')):
-                message.append(TextSendMessage(text="請輸入!find開始配對"))
+            if(msg[0]=='!' or msg[0]=='！'):
+                if(msg[1:5]=='find'):
+                    if(info[5]=='-1'):
+                        cabdidates = db.getUnpaired(profile.user_id)
+                        if(len(cabdidates)==0):
+                            message.append(TextSendMessage(text="目前無人可配對"))
+                        else:
+                            selected_index = rd.randint(0,len(cabdidates)-1)
+                            pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
+                            db.pair(profile.user_id,pairProfile.user_id)
+                            message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
+                            data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
+                            rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                    else:
+                        cabdidates = db.getUnpaired2(profile.user_id,info[5])
+                        if(len(cabdidates)==0):
+                            message.append(TextSendMessage(text="目前無人可配對"))
+                        else:
+                            selected_index = rd.randint(0,len(cabdidates)-1)
+                            pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
+                            db.pair(profile.user_id,pairProfile.user_id)
+                            message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
+                            data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
+                            rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                if(msg[1:5] == 'info'):
+                    if(info[5]=='-1'):
+                        message.append(TextSendMessage(text="請輸入!find開始配對"))
+                    else:
+                        pairProfile = line_bot_api.get_profile(info[5])
+                        returnMsg = "配對對象： " + pairProfile.display_name+'\n歷史對話紀錄：\n'
+                        history = db.talkHistory(profile.user_id,pairProfile.user_id)
+                        for i in history:
+                            if(i[1]==profile.user_id):
+                                returnMsg+=(profile.display_name+':\n'+i[2]+'\n')
+                            else:
+                                returnMsg+=(pairProfile.display_name+':\n'+i[2]+'\n')
+                        message.append(TextSendMessage(text=returnMsg))
             else:
-                if(msg[0]=='!' or msg[0]=='！'):
-                    if(msg[1:5]=='find'):
-                        if(info[5]=='-1'):
-                            cabdidates = db.getUnpaired(profile.user_id)
-                            if(len(cabdidates)==0):
-                                message.append(TextSendMessage(text="目前無人可配對"))
-                            else:
-                                selected_index = rd.randint(0,len(cabdidates)-1)
-                                pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
-                                db.pair(profile.user_id,pairProfile.user_id)
-                                message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
-                                data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
-                                rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
-                        else:
-                            cabdidates = db.getUnpaired2(profile.user_id,info[5])
-                            if(len(cabdidates)==0):
-                                message.append(TextSendMessage(text="目前無人可配對"))
-                            else:
-                                selected_index = rd.randint(0,len(cabdidates)-1)
-                                pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
-                                db.pair(profile.user_id,pairProfile.user_id)
-                                message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
-                                data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
-                                rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
-                    if(msg[1:5] == 'info'):
-                        if(info[5]=='-1'):
-                            message.append(TextSendMessage(text="請輸入!find開始配對"))
-                        else:
-                            pairProfile = line_bot_api.get_profile(info[5])
-                            returnMsg = "配對對象： " + pairProfile.display_name+'\n歷史對話紀錄：\n'
-                            history = db.talkHistory(profile.user_id,pairProfile.user_id)
-                            for i in history:
-                                if(i[1]==profile.user_id):
-                                    returnMsg+=(profile.display_name+':\n'+i[2]+'\n')
-                                else:
-                                    returnMsg+=(pairProfile.display_name+':\n'+i[2]+'\n')
-                            message.append(TextSendMessage(text=returnMsg))
+                if(info[4]==False):
+                    message.append(TextSendMessage(text="請輸入!find開始配對"))
                 else:
                     if(info[5]=='-1'):
                         message.append(TextSendMessage(text="還未配對成功"))
@@ -192,6 +192,7 @@ def handle_message(event):
                         db.talk(profile.user_id,msg,info[5])
                         line_bot_api.push_message(info[5],profile.display_name+":\n"+msg)
                         return
+
         line_bot_api.reply_message(
             event.reply_token,
             message

@@ -130,6 +130,16 @@ class Database:
         cursor.close()
         conn.close()
         return affected
+    
+    def enablePairing(self,id):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("update lineuser set friend_enable = true ,update = %s where id = %s", (dt.now(),id))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
 
 
 if __name__ == "__main__":
