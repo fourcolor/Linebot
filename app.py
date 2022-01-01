@@ -1,6 +1,5 @@
 # 載入需要的模組
 import os
-import re
 from flask import Flask, request, abort
 from flask.helpers import send_file, send_from_directory
 from linebot import *
@@ -10,6 +9,8 @@ import json
 from dotenv import load_dotenv
 from database import Database
 from translate import Translater
+import random as rd
+import requests as rq
 load_dotenv()
 app = Flask(__name__)
 db = Database()
@@ -30,6 +31,12 @@ def getaudio():
         return send_file(file + '.m4a')
     except:
         abort(404)
+
+@app.route("/pairSend", methods=['POST'])
+def getaudio():
+    id = request.values.get("id")
+    msg = request.values.get("msg")
+    line_bot_api.push_message(id,TextSendMessage(text=msg))
 
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
@@ -60,6 +67,13 @@ def handle_message(event):
         handle_join(event)
     else:
         #翻譯機
+        if(msg[0]=='!' or msg[0]=='！'):
+            if(msg[1:6]=='lobby'):
+                db.update(profile.user_id,0)
+                handle_join(event)
+                return
+        if(info[0]==0):
+            handle_join(event)
         if(info[0] == 1):
             t = Translater()
             if(msg[0]=='!' or msg[0]=='！'):
@@ -116,10 +130,6 @@ def handle_message(event):
                             )
                         )
                         return
-                if(msg[1:6]=='lobby'):
-                    db.update(profile.user_id,0)
-                    handle_join(event)
-                    return
             result = t.trans(event.message.text,dst=info[2])
             message.append(TextSendMessage(text=result))
             if(info[3]==True):
@@ -131,8 +141,57 @@ def handle_message(event):
         if (info[0] == 2):
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text=event.message.text)
+                TextSendMessage(text=msg)
             )
+        
+        if(info[0]==3):
+            if(info[4]==False):
+                message.append(TextSendMessage(text="請輸入!find開始配對"))
+            else:
+                if(msg[0]=='!' or msg[0]=='！'):
+                    if(msg[1:5]=='!find'):
+                        if(info[5]=='-1'):
+                            cabdidates = db.getUnpaired(profile.user_id)
+                            if(len(cabdidates)==0):
+                                message.append(TextSendMessage(text="目前無人可配對"))
+                            else:
+                                selected_index = rd.randint(0,len(cabdidates)-1)
+                                pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
+                                db.pair(profile.user_id,pairProfile.user_id)
+                                message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
+                                data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
+                                rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                        else:
+                            cabdidates = db.getUnpaired2(profile.user_id,info[5])
+                            if(len(cabdidates)==0):
+                                message.append(TextSendMessage(text="目前無人可配對"))
+                            else:
+                                selected_index = rd.randint(0,len(cabdidates)-1)
+                                pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
+                                db.pair(profile.user_id,pairProfile.user_id)
+                                message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
+                                data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
+                                rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                    if(msg[1:5] == 'info'):
+                        if(info[5]!='-1'):
+                            message.append(TextSendMessage(text="請輸入!find開始配對"))
+                        else:
+                            pairProfile = line_bot_api.get_profile(info[5])
+                            returnMsg = "配對對象： " + pairProfile.display_name+'\n歷史對話紀錄：\n'
+                            history = db.talkHistory(profile.user_id,pairProfile.user_id)
+                            for i in history:
+                                if(i[1]==profile.user_id):
+                                    returnMsg+=(profile.display_name+':\n'+i[2]+'\n')
+                                else:
+                                    returnMsg+=(pairProfile.display_name+':\n'+i[2]+'\n')
+                            message.append(TextSendMessage(text=returnMsg))
+                else:
+                    if(info[5]=='-1'):
+                        message.append(TextSendMessage(text="還未配對成功"))
+                    else:
+                        db.talk(profile.user_id,msg,info[5])
+                        line_bot_api.push_message(info[5],profile.display_name+":\n"+msg)
+                        return
         line_bot_api.reply_message(
             event.reply_token,
             message
@@ -187,10 +246,14 @@ def handle_postback(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(
-                "歡迎與 Fourcolor Chatbot 聊天\n\指令列\n!lobby      ->回到大廳\n")
+                "歡迎與 Fourcolor Chatbot 聊天\n指令列\n!lobby      ->回到大廳\n")
         )
     if(info==3):
-        pass
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(
+                "歡迎進入配對系統\，此系統會根據此官方帳號的進行好友配對，配對成功後便可以與對方聊天\n指令列\n!help       ->查詢指令\n!find       ->開始配對（或是重新配對）\n!info       ->查看配對資訊及歷史對話紀錄\n!lobby      ->回到大廳\n")
+        )
 
 if __name__ == "__main__":
     app.run()

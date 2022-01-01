@@ -29,11 +29,31 @@ class Database:
     def get(self,id):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("select state,update,trans_state,audio_enable from lineuser where id = %s", (id,))
+        cursor.execute("select state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id = %s", (id,))
         try:
             data = cursor.fetchall()[0]
         except:
             data = None        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return data
+
+    def getUnpaired(self,id):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("select id,state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id != %s and pairing_id = '-1'", (id,))
+        data = cursor.fetchall()      
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return data
+
+    def getUnpaired2(self,id1,id2):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("select id,state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id != %s and id != %s and pairing_id = '-1'", (id1,id2))
+        data = cursor.fetchall()      
         conn.commit()
         cursor.close()
         conn.close()
@@ -49,32 +69,20 @@ class Database:
         conn.close()
         return affected
     
-    def talk(self,id,msg):
+    def talk(self,id,msg,to='-1'):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO linemsg (userid, message,time) VALUES (%s, %s,%s);", (id, msg,dt.now()))
+        cursor.execute("INSERT INTO linemsg (userid, message,time,to_id) VALUES (%s, %s,%s);", (id, msg,dt.now(),to))
         affected = cursor.rowcount
         conn.commit()
         cursor.close()
         conn.close()
         return affected
 
-    def getTransInfo(self,id):
-        conn = psycopg2.connect(self.conn_string)
-        cursor = conn.cursor()
-        cursor.execute("select trans_state,audio_enable from lineuser where id = %s", (id,))
-        try:
-            data = cursor.fetchall()[0]
-        except:
-            data = None        
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return data
     def updatelanguage(self,id,l):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("update lineuser set trans_state = %s ,update = %s where id = %s", (l,dt.now(),id))
+        cursor.execute("update lineuser set trans_state = %s ,update = %s where id != %s", (l,dt.now(),id))
         affected = cursor.rowcount
         conn.commit()
         cursor.close()
@@ -85,6 +93,38 @@ class Database:
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
         cursor.execute("update lineuser set audio_enable = %s ,update = %s where id = %s", (l,dt.now(),id))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
+
+    def pair(self,id1,id2):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("update lineuser set pairing_id = %s ,update = %s where id = %s", (id2,dt.now(),id1))
+        affected = cursor.rowcount
+        cursor.execute("update lineuser set pairing_id = %s ,update = %s where id = %s", (id1,dt.now(),id2))
+        affected += cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
+
+    def talkHistory(self,id,pid):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("select id,userid,message,toid from linemsg where (userid = %s and pairing_id = %s) or (userid = %s and pairing_id = %s) orderby id", (id,pid,pid,id))
+        data = cursor.fetchall()    
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return data
+
+    def rmPairing(self,id):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("update lineuser set pairing_id = %s ,update = %s where id = %s", ('-1',dt.now(),id))
         affected = cursor.rowcount
         conn.commit()
         cursor.close()
