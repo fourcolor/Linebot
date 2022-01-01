@@ -42,7 +42,7 @@ class Database:
     def getUnpaired(self,id):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("select id,state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id != %s and pairing_id = '-1'", (id,))
+        cursor.execute("select id,state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id != %s and pairing_id = '-1' and friend_enable = true", (id,))
         data = cursor.fetchall()      
         conn.commit()
         cursor.close()
@@ -52,7 +52,7 @@ class Database:
     def getUnpaired2(self,id1,id2):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("select id,state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id != %s and id != %s and pairing_id = '-1'", (id1,id2))
+        cursor.execute("select id,state,update,trans_state,audio_enable,friend_enable,pairing_id from lineuser where id != %s and id != %s and pairing_id = '-1' and friend_enable = true", (id1,id2))
         data = cursor.fetchall()      
         conn.commit()
         cursor.close()
