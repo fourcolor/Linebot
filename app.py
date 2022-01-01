@@ -125,7 +125,7 @@ def handle_message(event):
             if(info[3]==True):
                 t.voice().save(str(profile.user_id)+'.m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static?audio='+str(profile.user_id)
-                message.append(AudioSendMessage(url,duration=len(msg)*330))
+                message.append(AudioSendMessage(url,duration=len(msg)*500))
 
         #聊天機器人
         if (info[0] == 2):
@@ -187,9 +187,7 @@ def handle_postback(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(
-                "歡迎與 Fourcolor Chatbot 聊天\n\
-                指令列\
-                !lobby      ->回到大廳\n")
+                "歡迎與 Fourcolor Chatbot 聊天\n\指令列\n!lobby      ->回到大廳\n")
         )
     if(info==3):
         pass
