@@ -147,6 +147,7 @@ def handle_message(event):
         if(info[0]==3):
             if(msg[0]=='!' or msg[0]=='！'):
                 if(msg[1:5]=='find'):
+                    db.enablePairing(profile.user_id)
                     if(info[5]=='-1'):
                         cabdidates = db.getUnpaired(profile.user_id)
                         if(len(cabdidates)==0):
