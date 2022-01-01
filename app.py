@@ -113,8 +113,8 @@ def handle_message(event):
             result = t.trans(event.message.text,dst=info[2])
             message.append(TextSendMessage(text=result))
             if(info[3]==True):
-                t.voice().save('static/'+str(profile.user_id)+'m4a')
-                url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'m4a'
+                t.voice().save('static/'+str(profile.user_id)+'.m4a')
+                url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'.m4a'
                 message.append(AudioSendMessage(url,duration=len(msg)*500))
 
         #聊天機器人
