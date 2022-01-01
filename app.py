@@ -1,5 +1,6 @@
 # 載入需要的模組
 import os
+import re
 from flask import Flask, request, abort
 from linebot import *
 from linebot.exceptions import *
@@ -48,13 +49,81 @@ def handle_message(event):
         db.insert(profile.user_id,0)
         handle_join(event)
     else:
+        #翻譯機
         if(info[0] == 1):
             t = Translater()
+            if(msg[0]=='!'):
+                if(msg[1:5]=='help'):
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        TextSendMessage(
+                        "預設為翻成中文，可以使用下列指令執行其他功能。\n指令列\n!help       ->查詢指令\n!cl [語言簡寫]->更改翻譯的語言\n!ls         ->顯示語言列表\n!cv 1/0     ->是否要語音，1代表要，0（預設）代表不要\n!lobby      ->回到大廳\n")
+                    )
+                    return
+                if(msg[1:3]=='cl'):
+                    if(db.updatelanguage(profile.user_id,msg.split(' ')[1]>0)):
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(
+                            "已將翻譯語言設定為" + msg.split(' ')[1]
+                            )
+                        )
+                        return
+                    else:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(
+                            "翻譯語言已為" + msg.split(' ')[1]
+                            )
+                        )
+                        return
+                if(msg[1:3]=='ls'):
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        TextSendMessage(
+                        t.allLanguage()
+                        )
+                    )
+                    return
+                if(msg[1:3]=='cv'):
+                    enable = msg.split(' ')[1]
+                    if(enable == '1'):
+                        db.updateAudio(profile.user_id,True)
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(
+                            "語音設定為是"
+                            )
+                        )
+                        return
+                    elif(enable == '0'):
+                        db.updateAudio(profile.user_id,False)
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(
+                            "語音設定為否"
+                            )
+                        )
+                        return
+                    else:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(
+                            "必須為0或1"
+                            )
+                        )
+                        return
+                if(msg[1:6]=='lobby'):
+                    db.update(profile.user_id,0)
+                    handle_join(event)
+                    return
             message.append(TextSendMessage(text=t.trans(event.message.text,dst=info[2])))
             if(info[3]==True):
                 t.voice().save('static/'+str(profile.user_id)+'m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'m4a'
                 message.append(AudioSendMessage('static/'+str(profile.user_id)+'m4a',duration=len(msg)*500))
+
+        #聊天機器人
         if (info[0] == 2):
             line_bot_api.reply_message(
                 event.reply_token,

@@ -71,6 +71,26 @@ class Database:
         cursor.close()
         conn.close()
         return data
+    def updatelanguage(self,id,l):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("update lineuser set trans_state = %s ,update = %s where id = %s", (l,dt.now(),id))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
+    
+    def updateAudio(self,id,l):
+        conn = psycopg2.connect(self.conn_string)
+        cursor = conn.cursor()
+        cursor.execute("update lineuser set trans_state = %s ,update = %s where id = %s", (l,dt.now(),id))
+        affected = cursor.rowcount
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return affected
+
 
 if __name__ == "__main__":
     db = Database()
