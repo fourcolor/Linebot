@@ -2,6 +2,7 @@
 import os
 import re
 from flask import Flask, request, abort
+from flask.helpers import send_file, send_from_directory
 from linebot import *
 from linebot.exceptions import *
 from linebot.models import *
@@ -20,6 +21,16 @@ profile = object()
 @app.route("/")
 def hello_world():
     return "hello world!"
+
+@app.route("/static", methods=['GET'])
+def getaudio():
+    print("static")
+    file = request.args.get('audio')
+    print(file)
+    try:
+        return send_file('static/'+ file + '.m4a')
+    except:
+        abort(404)
 
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
@@ -113,8 +124,8 @@ def handle_message(event):
             result = t.trans(event.message.text,dst=info[2])
             message.append(TextSendMessage(text=result))
             if(info[3]==True):
-                t.voice().save('static/'+str(profile.user_id)+'.m4a')
-                url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'.m4a'
+                t.voice().save(os.getcwd()+'/static/'+str(profile.user_id)+'.m4a')
+                url = 'https://line-bot-fourcolor.herokuapp.com/static?'+str(profile.user_id)
                 message.append(AudioSendMessage(url,duration=len(msg)*500))
 
         #聊天機器人
