@@ -28,7 +28,7 @@ def getaudio():
     file = request.args.get('audio')
     print(file)
     try:
-        return send_file('static/'+ file + '.m4a')
+        return send_file(file + '.m4a')
     except:
         abort(404)
 
@@ -124,7 +124,7 @@ def handle_message(event):
             result = t.trans(event.message.text,dst=info[2])
             message.append(TextSendMessage(text=result))
             if(info[3]==True):
-                t.voice().save(os.getcwd()+'/static/'+str(profile.user_id)+'.m4a')
+                t.voice().save(str(profile.user_id)+'.m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static?'+str(profile.user_id)
                 message.append(AudioSendMessage(url,duration=len(msg)*500))
 
