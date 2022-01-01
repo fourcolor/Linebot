@@ -33,7 +33,7 @@ def getaudio():
         abort(404)
 
 @app.route("/pairSend", methods=['POST'])
-def getaudio():
+def sendMsgTo():
     id = request.values.get("id")
     msg = request.values.get("msg")
     line_bot_api.push_message(id,TextSendMessage(text=msg))
