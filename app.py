@@ -173,7 +173,7 @@ def handle_message(event):
                                 data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
                                 rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
                     if(msg[1:5] == 'info'):
-                        if(info[5]!='-1'):
+                        if(info[5]=='-1'):
                             message.append(TextSendMessage(text="請輸入!find開始配對"))
                         else:
                             pairProfile = line_bot_api.get_profile(info[5])
