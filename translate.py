@@ -6,12 +6,11 @@ class Translater:
         self.ans = ""
         pass
     def trans(self, msg, dst):
-        print(dst)
         if(dst in googletrans.LANGCODES.values()):
-            ans = self.translater.translate(msg, dest='zh-tw').text
-            return ans
+            self.ans = self.translater.translate(msg, dest='zh-tw').text
         else:
-            return self.translater.translate(msg, dest=dst).text
+            self.ans = self.translater.translate(msg, dest=dst).text
+        return self.ans
 
     def allLanguage(self):
         return str(googletrans.LANGCODES)[1:-1].replace(',','\n').replace('\'','')

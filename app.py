@@ -110,11 +110,12 @@ def handle_message(event):
                     db.update(profile.user_id,0)
                     handle_join(event)
                     return
-            message.append(TextSendMessage(text=t.trans(event.message.text,dst=info[2])))
+            result = t.trans(event.message.text,dst=info[2])
+            message.append(TextSendMessage(text=result))
             if(info[3]==True):
                 t.voice().save('static/'+str(profile.user_id)+'m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static/'+str(profile.user_id)+'m4a'
-                message.append(AudioSendMessage('static/'+str(profile.user_id)+'m4a',duration=len(msg)*500))
+                message.append(AudioSendMessage(url,duration=len(msg)*500))
 
         #聊天機器人
         if (info[0] == 2):
