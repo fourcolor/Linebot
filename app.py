@@ -145,7 +145,7 @@ def handle_message(event):
             )
         
         if(info[0]==3):
-            if(info[4]==False):
+            if(info[4]==False and ((msg[0]=='!' or msg[0]=='！')and msg[1:5]=='!find')):
                 message.append(TextSendMessage(text="請輸入!find開始配對"))
             else:
                 if(msg[0]=='!' or msg[0]=='！'):
