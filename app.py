@@ -158,7 +158,7 @@ def handle_message(event):
                             db.pair(profile.user_id,pairProfile.user_id)
                             message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
                             data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
-                            rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                            rq.post("https://line-bot-fourcolor.herokuapp.com/pairSend",data=data)
                     else:
                         cabdidates = db.getUnpaired2(profile.user_id,info[5])
                         if(len(cabdidates)==0):
@@ -166,13 +166,13 @@ def handle_message(event):
                         else:
                             db.rmPairing(info[5])
                             data = {'id': info[5],'msg':profile.display_name+" 取消了配對"}
-                            rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                            rq.post("https://line-bot-fourcolor.herokuapp.com/pairSend",data=data)
                             selected_index = rd.randint(0,len(cabdidates)-1)
                             pairProfile = line_bot_api.get_profile(cabdidates[selected_index][0])
                             db.pair(profile.user_id,pairProfile.user_id)
                             message.append(TextSendMessage(text="配對對象： " + pairProfile.display_name))
                             data = {'id': pairProfile.user_id,'msg':"配對對象： " + profile.display_name}
-                            rq.post("https://line-bot-fourcolor.herokuapp.com/pair",data=data)
+                            rq.post("https://line-bot-fourcolor.herokuapp.com/pairSend",data=data)
                 if(msg[1:5] == 'info'):
                     if(info[5]=='-1'):
                         message.append(TextSendMessage(text="請輸入!find開始配對"))
