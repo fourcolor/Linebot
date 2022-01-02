@@ -194,7 +194,7 @@ def handle_message(event):
                         message.append(TextSendMessage(text="還未配對成功"))
                     else:
                         db.talk(profile.user_id,msg,info[5])
-                        line_bot_api.push_message(info[5],profile.display_name+":\n"+msg)
+                        line_bot_api.push_message(info[5],TextSendMessage(profile.display_name+":\n"+msg))
                         return
 
         line_bot_api.reply_message(
