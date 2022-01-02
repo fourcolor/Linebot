@@ -6,4 +6,5 @@ googletrans==4.0.0-rc1
 gTTS
 python-dotenv
 psycopg2
-tensorflow
+tensorflow-cpu
+numpy
