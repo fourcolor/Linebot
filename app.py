@@ -136,6 +136,7 @@ def handle_message(event):
                             )
                         )
                         return
+            print(info[2])
             result = t.trans(event.message.text,dst=info[2])
             message.append(TextSendMessage(text=result))
             if(info[3]==True):

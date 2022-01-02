@@ -24,4 +24,4 @@ class Translater:
 
 if __name__ == "__main__":
     t = Translater()
-    print(t.trans("邂逅","en"))
+    print(t.trans("你好","en"))
