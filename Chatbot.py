@@ -1,16 +1,9 @@
 import os
 import time
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from pprint import pprint
 # from IPython.display import clear_output
-from tensorflow_text.tools.wordpiece_vocab import bert_vocab_from_dataset as bert_vocab
 import tensorflow as tf
 import tensorflow.keras as keras
-import tensorflow_text as tftext
-from sklearn.utils import shuffle
-import pandas as pd
 import pickle
 
 def create_padding_mask(seq):
