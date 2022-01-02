@@ -37,6 +37,12 @@ def sendMsgTo():
     id = request.values.get("id")
     msg = request.values.get("msg")
     line_bot_api.push_message(id,TextSendMessage(text=msg))
+    response = app.response_class(
+            response=json.dumps({"status":"success"}),
+            status=200,
+            mimetype='application/json'
+    )
+    return response
 
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
