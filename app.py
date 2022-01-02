@@ -265,6 +265,8 @@ def handle_postback(event):
             TextSendMessage(
                 "歡迎進入配對系統\，此系統會根據此官方帳號的進行好友配對，配對成功後便可以與對方聊天\n指令列\n!help       ->查詢指令\n!find       ->開始配對（或是重新配對）\n!info       ->查看配對資訊及歷史對話紀錄\n!lobby      ->回到大廳\n")
         )
-
+@app.route("/fsm", methods=["GET"])
+def show_fsm():
+    return send_file("img/statediagram.png", mimetype="image/png")
 if __name__ == "__main__":
     app.run()
