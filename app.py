@@ -141,7 +141,7 @@ def handle_message(event):
             if(info[3]==True):
                 t.voice().save(str(profile.user_id)+'.m4a')
                 url = 'https://line-bot-fourcolor.herokuapp.com/static?audio='+str(profile.user_id)
-                message.append(AudioSendMessage(url,duration=len(msg)*500))
+                message.append(AudioSendMessage(url,duration=len(t.ans)*500))
 
         #聊天機器人
         if (info[0] == 2):
