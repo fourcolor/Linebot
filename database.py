@@ -114,7 +114,7 @@ class Database:
     def talkHistory(self,id,pid):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("select id,userid,message,toid from linemsg where (userid = %s and pairing_id = %s) or (userid = %s and pairing_id = %s) orderby id", (id,pid,pid,id))
+        cursor.execute("select id,userid,message,to_id from linemsg where (userid = %s and to_id = %s) or (userid = %s and to_id = %s) order by id", (id,pid,pid,id))
         data = cursor.fetchall()    
         conn.commit()
         cursor.close()
@@ -144,6 +144,6 @@ class Database:
 
 if __name__ == "__main__":
     db = Database()
-    print(db.getTransInfo('U11e740fda119861f84109438dfa63f38')[1]==False)
+    print(db.talkHistory('U11e740fda119861f84109438dfa63f38','U16e66d16c3f7ab96f9631ce7bc0f1161'))
 
 
