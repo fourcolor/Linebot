@@ -23,6 +23,6 @@ class FSMachine(object):
 
 if __name__ == "__main__" :
     mach = FSMachine()
-    machine = GraphMachine(model=mach, states=mach.states, transitions=mach.transitions,initial=mach.states[0])
+    machine = Machine(model=mach, states=mach.states, transitions=mach.transitions,initial=mach.states[0])
     mach.get_graph().draw('statediagram.png', prog='dot')
     
