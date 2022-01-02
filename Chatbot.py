@@ -485,4 +485,4 @@ class chatModel:
         with open('tokenizer.pickle', 'rb') as handle:
             tokenizer = pickle.load(handle)
     t = Tool()
-    print(t.string_in_string_out(model,tokenizer,msg))
+    return t.string_in_string_out(model,tokenizer,msg)
