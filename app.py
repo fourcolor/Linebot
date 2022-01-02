@@ -9,6 +9,7 @@ import json
 from dotenv import load_dotenv
 from database import Database
 from translate import Translater
+from Chatbot import *
 import random as rd
 import requests as rq
 load_dotenv()
@@ -145,10 +146,8 @@ def handle_message(event):
 
         #聊天機器人
         if (info[0] == 2):
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=msg)
-            )
+            t = chatModel()
+            message.append(TextSendMessage(t.talk(msg)))
         
         if(info[0]==3):
             if(msg[0]=='!' or msg[0]=='！'):

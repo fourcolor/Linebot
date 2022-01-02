@@ -11,7 +11,7 @@ import tensorflow.keras as keras
 import tensorflow_text as tftext
 from sklearn.utils import shuffle
 import pandas as pd
-
+import pickle
 
 def create_padding_mask(seq):
   # padding mask 的工作就是把索引序列中為 0 的位置設為 1
@@ -459,3 +459,37 @@ class CustomSchedule(keras.optimizers.schedules.LearningRateSchedule):
   
 
 
+class chatModel:
+  def talk(self,msg):
+    num_layers = 4 
+    d_model = 128
+    dff = 512
+    num_heads = 8
+    input_vocab_size = 6165
+    target_vocab_size = 6165
+    dropout_rate = 0 
+    model = Transformer(num_layers, d_model, num_heads, dff,
+                            input_vocab_size, target_vocab_size, dropout_rate)
+    learning_rate = CustomSchedule(d_model)
+    optimizer = keras.optimizers.Adam(
+    learning_rate,
+    beta_1=0.9,
+    beta_2=0.98, 
+    epsilon=1e-9
+    )
+    # tf.train.Checkpoint 可以幫我們把想要存下來的東西整合起來，方便儲存與讀取
+    # 一般來說你會想存下模型以及 optimizer 的狀態
+    ckpt = tf.train.Checkpoint(transformer=model,
+                            optimizer=optimizer)
+
+    # ckpt_manager 會去 checkpoint_path 看有沒有符合 ckpt 裡頭定義的東西
+    # 存檔的時候只保留最近 5 次 checkpoints，其他自動刪除
+    ckpt_manager = tf.train.CheckpointManager(ckpt, 'static', max_to_keep=5)
+
+    # 如果在 checkpoint 路徑上有發現檔案就讀進來
+    if ckpt_manager.latest_checkpoint:
+        ckpt.restore(ckpt_manager.latest_checkpoint)
+        with open('tokenizer.pickle', 'rb') as handle:
+            tokenizer = pickle.load(handle)
+    t = Tool()
+    print(t.string_in_string_out(model,tokenizer,msg))
