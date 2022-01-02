@@ -82,7 +82,7 @@ class Database:
     def updatelanguage(self,id,l):
         conn = psycopg2.connect(self.conn_string)
         cursor = conn.cursor()
-        cursor.execute("update lineuser set trans_state = %s ,update = %s where id != %s", (l,dt.now(),id))
+        cursor.execute("update lineuser set trans_state = %s ,update = %s where id = %s", (l,dt.now(),id))
         affected = cursor.rowcount
         conn.commit()
         cursor.close()
