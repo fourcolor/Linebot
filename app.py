@@ -7,6 +7,7 @@ from linebot.exceptions import *
 from linebot.models import *
 import json
 from dotenv import load_dotenv
+from fsm import FSMachine
 from database import Database
 from translate import Translater
 from Chatbot import *
@@ -68,12 +69,11 @@ def handle_message(event):
     message = []
     db.talk(profile.user_id,msg)
     info = db.get(profile.user_id)
-    print(info)
+    mach = FSMachine(profile,info,line_bot_api)
     if(info==None):
         db.insert(profile.user_id,0)
         handle_join(event)
     else:
-        #翻譯機
         if(msg[0]=='!' or msg[0]=='！'):
             if(msg[1:6]=='lobby'):
                 db.update(profile.user_id,0)
