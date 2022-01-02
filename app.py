@@ -69,7 +69,6 @@ def handle_message(event):
     message = []
     db.talk(profile.user_id,msg)
     info = db.get(profile.user_id)
-    mach = FSMachine(profile,info,line_bot_api)
     if(info==None):
         db.insert(profile.user_id,0)
         handle_join(event)
