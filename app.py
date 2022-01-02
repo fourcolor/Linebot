@@ -93,7 +93,7 @@ def handle_message(event):
                     return
                 if(msg[1:3]=='cl'):
                     print(msg.split(' ')[1])
-                    db.updatelanguage(profile.user_id,msg.split(' ')[1])
+                    print(db.updatelanguage(profile.user_id,msg.split(' ')[1]))
                     line_bot_api.reply_message(
                         event.reply_token,
                         TextSendMessage(
