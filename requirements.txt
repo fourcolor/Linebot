@@ -9,4 +9,4 @@ psycopg2
 tensorflow-cpu
 numpy
 transitions
-pygraphviz
+graphviz
